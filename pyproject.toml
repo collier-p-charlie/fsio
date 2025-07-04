@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fsio"
+version = "0.0.1"  # https://packaging.python.org/en/latest/discussions/versioning/
+dependencies = []
+requires-python = ">=3.11"
+authors = [
+  { name="Charlie Collier", email="collier.p.charlie@gmail.com" }
+]
+maintainers = [
+  { name="Charlie Collier", email="collier.p.charlie@gmail.com" }
+]
+description = "Python package containing useful file system operations"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Framework :: Hatch"
+]
+
+[project.optional-dependencies]
+# These will install if installing the subproject, e.g. "pip install .[name]"
+
+[project.urls]
+Repository = "https://github.com/collier-p-charlie/fsio"
+Issues = "https://github.com/collier-p-charlie/fsio/issues"
+Changelog = "https://github.com/collier-p-charlie/fsio/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "**.py",
+  "/tests"
+]
+exclude = []
