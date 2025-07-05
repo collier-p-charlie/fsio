@@ -39,7 +39,37 @@ jobs:
 
       - name: Run PyTest
         env:
-          PYTHONPATH: .
+          PYTHONPATH: src
         run: |
           source .venv/bin/activate
           pytest
+
+  run-python-tests-from-test-pypi:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ">=3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv && source .venv/bin/activate
+          uv pip install -i https://test.pypi.org/simple/ "fsio[test]" 
+
+      - name: Run PyTest
+        run: |
+          source .venv/bin/activate
+          pytest --no-cov  # override
