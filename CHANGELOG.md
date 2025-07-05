@@ -12,6 +12,13 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [1.0.0] 
+[2025-07-05]()
+
+### Amended
+- **GitHub** action takes _version_ from `pyproject.toml` not tag on release.
+
+
 ## [0.0.3.dev2] 
 [2025-07-05]()
 
