@@ -14,7 +14,7 @@ for file in $FILES_TO_CHECK; do
   fi
 done
 
-if [[ ${#FILES_NOT_CHANGED[@]} > 0 ]];
+if [[ ${#FILES_NOT_CHANGED[@]} > 0 ]]; then
   echo "The following files which require updates were not updated: $FILES_NOT_CHANGED"
   exit 1
 fi
