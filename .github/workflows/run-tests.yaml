@@ -51,7 +51,7 @@ jobs:
 
   run-python-tests-from-test-pypi:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.base_ref == 'main'
 
     steps:
       - name: Checkout code
@@ -79,8 +79,9 @@ jobs:
         run: |
           uv venv .venv && source .venv/bin/activate
           VERSION=${{ steps.get-version.outputs.version }}
-          echo "Installing Test PyPI fsio==$VERSION"
-          uv pip install -i https://test.pypi.org/simple/ "fsio[test]==$VERSION" 
+          echo "Installing Test PyPI fsio==$VERSION and test requirements from stable"
+          uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION
+          uv pip install "fsio[test]"
 
       - name: Run PyTest
         run: |
