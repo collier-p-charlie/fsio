@@ -7,3 +7,5 @@ if [[ -z $CHECK_CHANGELOG ]]; then
   echo "No CHANGELOG entry for latest version $VERSION"
   exit 1
 fi
+
+echo "CHANGELOG version $VERSION found"
