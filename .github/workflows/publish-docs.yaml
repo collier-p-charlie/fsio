@@ -6,6 +6,7 @@ on:
   release:
     types:
       - published
+  on_workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - name: Setup Python
         uses: actions/setup-python@v5
