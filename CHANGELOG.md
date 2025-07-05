@@ -12,6 +12,14 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [0.0.2.dev1] 
+[2025-07-05]()
+
+### Added
+- Functionality to test for whether a `BytesIO` _file_ is of **PARQUET** type.
+- Relevant **GitHub** workflows for publishing to **PyPI** and validation checks.
+
+
 ## [0.0.1] 
 [2025-07-04]()
 
