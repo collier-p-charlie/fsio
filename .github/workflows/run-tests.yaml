@@ -51,7 +51,7 @@ jobs:
 
   run-python-tests-from-test-pypi:
     runs-on: ubuntu-latest
-    if: github.base_ref == 'refs/heads/main'
+    if: github.base_ref == 'main'
 
     steps:
       - name: Checkout code
