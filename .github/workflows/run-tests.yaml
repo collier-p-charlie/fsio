@@ -79,9 +79,13 @@ jobs:
         run: |
           uv venv .venv && source .venv/bin/activate
           VERSION=${{ steps.get-version.outputs.version }}
-          echo "Installing Test PyPI fsio==$VERSION and test requirements from stable"
+          
+          echo "Installing Test PyPI fsio==$VERSION"
           uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION
-          uv pip install "fsio[test]"
+          
+          echo "Installing test requirements"
+          uv pip compile pyproject.toml --extra test > test.requirements.txt
+          uv pip install -r test.requirements.txt
 
       - name: Run PyTest
         run: |
