@@ -99,6 +99,6 @@ class FileType:
         """
         head4 = cls.get_head_n_bytes(body, 4)
         tail4 = cls.get_tail_n_bytes(body, 4)
-        logger.debug(f"HEAD(4): {head4}")
-        logger.debug(f"TAIL(4): {tail4}")
+        logger.debug(f"HEAD(4): {head4!r}")
+        logger.debug(f"TAIL(4): {tail4!r}")
         return all(i == b'PAR1' for i in [head4, tail4])

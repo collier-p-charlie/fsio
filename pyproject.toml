@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fsio"
-version = "0.0.2"  # https://packaging.python.org/en/latest/discussions/versioning/
+version = "0.0.3.dev1"  # https://packaging.python.org/en/latest/discussions/versioning/
 dependencies = []
 requires-python = ">=3.11"
 authors = [
@@ -29,6 +29,7 @@ test = [
     # for testing
     "pytest",
     "pytest-cov",
+    "mypy",
     # code requirements
     "pyarrow"
 ]
@@ -42,6 +43,7 @@ cli = [
 ]
 
 [project.urls]
+Documentation = "https://collier-p-charlie.github.io/fsio"
 Repository = "https://github.com/collier-p-charlie/fsio"
 Issues = "https://github.com/collier-p-charlie/fsio/issues"
 Changelog = "https://github.com/collier-p-charlie/fsio/blob/main/CHANGELOG.md"

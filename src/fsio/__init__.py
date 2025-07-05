@@ -1,4 +1,4 @@
-from .core.detect_type import FileType
+from .core.file_type import FileType
 
 __all__ = [
     'FileType'

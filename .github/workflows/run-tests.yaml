@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv venv .venv && source .venv/bin/activate
-          uv pip install ".[test,cli]"
+          uv pip install ".[test]"
 
       - name: Run PyTest
         env:
@@ -43,6 +43,11 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest
+
+      - name: Run MyPy  # Typing Checking
+        run: |
+          source .venv/bin/activate
+          mypy src/ 
 
   run-python-tests-from-test-pypi:
     runs-on: ubuntu-latest

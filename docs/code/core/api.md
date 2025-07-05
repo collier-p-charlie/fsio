@@ -1,4 +1,4 @@
-# detect_type
+# file_type
 
-::: src.fsio.core.detect_type
+::: src.fsio.core.file_type
     handler: python
