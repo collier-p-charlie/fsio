@@ -14,6 +14,9 @@ for file in $FILES_TO_CHECK; do
   fi
 done
 
+echo "DEBUG: Files not changed below"
+echo $FILES_NOT_CHANGED
+
 if [[ ${#FILES_NOT_CHANGED[@]} > 0 ]]; then
   echo "The following files which require updates were not updated: $FILES_NOT_CHANGED"
   exit 1

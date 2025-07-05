@@ -16,7 +16,7 @@ maintainers = [
 description = "Python package containing useful file system operations"
 readme = "README.md"
 license = "MIT"
-license-files = ["LICENCSE*"]
+license-files = ["LICEN[CS]E*"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
