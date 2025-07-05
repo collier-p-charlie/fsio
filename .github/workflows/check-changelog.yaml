@@ -17,12 +17,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Check for updated CHANGELOG
         run: |
-          git fetch origin develop
           chmod +x .github/scripts/check-changed-file.sh
           .github/scripts/check-changed-file.sh "${{ github.base_ref }}" "CHANGELOG.md"
 
