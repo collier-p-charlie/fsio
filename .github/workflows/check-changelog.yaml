@@ -17,11 +17,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check for updated CHANGELOG
         run: |
           chmod +x .github/scripts/check-changed-file.sh
-          .github/scripts/check-changed-file.sh "${{ github.base_ref }}" "CHANGELOG.md"
+          .github/scripts/check-changed-file.sh ${{ github.base_ref }} CHANGELOG.md
 
       - name: Get version
         id: get-version

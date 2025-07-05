@@ -1,11 +1,11 @@
 #!/bin/bash
 
-BRANCH_NAME=$1  # {{ github.base_ref }}
+BASE_REF=$1  # {{ github.base_ref }}
 shift
 FILES_TO_CHECK="$@"
 
 FILES_NOT_CHANGED=()
-FILES_CHANGED=$(git diff --name-only origin/$BRANCH_NAME...HEAD)
+FILES_CHANGED=$(git diff --name-only origin/$BASE_REF...HEAD)
 
 for file in $FILES_TO_CHECK; do
   IS_PRESENT=$(echo $FILES_CHANGED | grep "^$file$")  # either empty or the file
