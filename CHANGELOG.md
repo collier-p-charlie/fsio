@@ -12,6 +12,13 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [0.0.3.dev2] 
+[2025-07-05]()
+
+### Amended
+- **GitHub** action for documentation ordering; **git** issue before checkout.
+
+
 ## [0.0.3.dev1] 
 [2025-07-05]()
 
