@@ -1,0 +1,38 @@
+# This workflow will validate if the changelog is updated
+
+name: Ensure Changelog Updated
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  check-changelog-updated:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Check for updated CHANGELOG
+        run: |
+          git fetch origin develop
+          chmod +x .github/scripts/check-changed-file.sh
+          .github/scripts/check-changed-file.sh "${{ github.base_ref }}" "CHANGELOG.md"
+
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(grep ^version pyproject.toml | sed -r 's/^version = "(.*)"(.*)/\1/g')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Ensure CHANGELOG has entry for this version
+        run: |
+          chmod +x .github/scripts/check-changelog-has-version.sh
+          .github/scripts/check-changelog-has-version.sh ${{ steps.get-version.outputs.version }}

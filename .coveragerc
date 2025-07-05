@@ -1,0 +1,21 @@
+[run]
+source = src/
+
+# Omit specific files from coverage
+omit =
+    tests/**
+    **/__init__.py
+
+[report]
+show_missing = True
+skip_covered = True
+
+# Exclude these lines from coverage report
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    def __str__
+    def __repr__
+
+# Fail if total coverage is below the threshold
+fail_under = 90
