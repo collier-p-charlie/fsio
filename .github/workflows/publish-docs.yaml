@@ -6,7 +6,7 @@ on:
   release:
     types:
       - published
-  on_workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
   contents: write
