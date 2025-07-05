@@ -1,0 +1,62 @@
+# This workflow will validate if the version in pyproject.toml has been upgraded to a newer version
+
+name: Ensure Version Upgraded
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  check-version-upgrade:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code  # Current branch code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          path: branch
+
+      - name: Checkout develop code  # Current development code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: develop
+          path: develop
+
+      - name: Get current version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(grep ^version branch/pyproject.toml | sed -r 's/^version = "(.*)"(.*)/\1/g')
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get develop version
+        id: develop-version
+        run: |
+          DEVELOP_VERSION=$(grep ^version develop/pyproject.toml | sed -r 's/^version = "(.*)"(.*)/\1/g')
+          echo "DEVELOP_VERSION=$DEVELOP_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ">=3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: |
+          uv pip install packaging
+
+      - name: Check version bump
+        run: |
+          python3 .github/scripts/check-version-bump.py \
+          ${{ steps.current-version.outputs.CURRENT_VERSION }} \
+          ${{ steps.develop-version.outputs.DEVELOP_VERSION }}
