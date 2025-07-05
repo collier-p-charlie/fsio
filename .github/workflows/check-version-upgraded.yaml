@@ -53,10 +53,12 @@ jobs:
 
       - name: Install dependencies
         run: |
+          uv venv .venv && source .venv/bin/activate
           uv pip install packaging
 
       - name: Check version bump
         run: |
+          source .venv/bin/activate
           python3 .github/scripts/check-version-bump.py \
           ${{ steps.current-version.outputs.CURRENT_VERSION }} \
           ${{ steps.develop-version.outputs.DEVELOP_VERSION }}
