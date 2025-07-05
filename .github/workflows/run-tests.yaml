@@ -79,12 +79,9 @@ jobs:
         run: |
           uv venv .venv && source .venv/bin/activate
           VERSION=${{ steps.get-version.outputs.version }}
-          echo "Installing Test PyPI fsio==$VERSION"
-          uv pip install \
-            --index-url https://test.pypi.org/simple/ \
-            --extra-index-url https://pypi.org/simple \
-            --index-strategy unsafe-best-match" \
-            fsio[test]==$VERSION" 
+          echo "Installing Test PyPI fsio==$VERSION and test requirements from stable"
+          uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION
+          uv pip install "fsio[test]"
 
       - name: Run PyTest
         run: |
