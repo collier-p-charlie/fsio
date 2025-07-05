@@ -1,0 +1,23 @@
+site_name: FSIO Documentation
+repo_url: https://github.com/collier-p-charlie/fsio
+site_url: https://collier-p-charlie.github.io/fsio/
+
+theme:
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - codehilite
+  - toc:
+      permalink: true

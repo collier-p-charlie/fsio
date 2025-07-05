@@ -32,6 +32,11 @@ test = [
     # code requirements
     "pyarrow"
 ]
+docs = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material"
+]
 cli = [
     "typer"
 ]
