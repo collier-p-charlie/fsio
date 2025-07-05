@@ -14,7 +14,7 @@ echo "DEBUG: FILES_CHANGED below"
 echo $FILES_CHANGED
 
 for file in $FILES_TO_CHECK; do
-  IS_PRESENT=$(echo $FILES_CHANGED | grep "^$file$")  # either empty or the file
+  IS_PRESENT=$(echo $FILES_CHANGED | grep $file)  # either empty or the file
   echo "FOR LOOP: $file"
   echo "IS_PRESENT = $IS_PRESENT"
   if [[ -z $IS_PRESENT ]]; then  # if empty no match
