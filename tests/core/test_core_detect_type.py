@@ -3,7 +3,7 @@
 from io import BytesIO, TextIOWrapper
 from unittest import TestCase
 
-from src.fsio.core.detect_type import FileType
+from fsio.core.detect_type import FileType
 
 
 def _create_parquet_file(

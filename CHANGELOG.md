@@ -12,6 +12,15 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [0.0.2] 
+[2025-07-05]()
+
+- All functionality working; testing **PyPI** upload.
+
+### Added
+- Unit testing using **Test PyPI** package from **dev** to **main**.
+
+
 ## [0.0.2.dev1] 
 [2025-07-05]()
 
