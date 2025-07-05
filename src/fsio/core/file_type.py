@@ -9,8 +9,9 @@ logger.setLevel(logging.INFO)
 
 class FileType:
     """
-    Class to determine the file type of an object in BytesIO form.
-    This is based on the file signatures / magic numbers as defined [here](https://en.wikipedia.org/wiki/List_of_file_signatures).
+    Class to determine the file type of an object in **BytesIO** form.
+
+    This is based on the _file signatures_ / _magic numbers_ as defined [here](https://en.wikipedia.org/wiki/List_of_file_signatures).
     """
 
     @classmethod
@@ -20,14 +21,14 @@ class FileType:
         n: int
     ) -> bytes:
         """
-        Function to return the first N bytes from the BytesIO object.
+        Function to return the first `n` bytes from the **BytesIO** object.
 
         Args:
-            body (io.BytesIO): the BytesIO object to extract the bytes from.
-            n (int): the number of bytes to return.
+            body: The **BytesIO** object to extract the bytes from.
+            n: The number of **bytes** to return.
 
         Returns:
-            bytes: a bytes object containing the first N bytes of the data.
+            A `bytes` object containing the first `n` bytes of the data.
 
         Examples:
             >>> from io import BytesIO
@@ -44,18 +45,18 @@ class FileType:
         n: int
     ) -> bytes:
         """
-        Function to return the last N bytes from the BytesIO object.
+        Function to return the last `n` bytes from the **BytesIO** object.
 
         Args:
-            body (io.BytesIO): the BytesIO object to extract the bytes from.
-            n (int): the number of bytes to return.
+            body: The **BytesIO** object to extract the bytes from.
+            n: The number of **bytes** to return.
 
         Returns:
-            bytes: a bytes object containing the last N bytes of the data.
+            A **bytes** object containing the last `n` bytes of the data.
 
         Examples:
             >>> from io import BytesIO
-            >>> FileType.get_head_n_bytes(BytesIO(b'Hello World!'), 6)
+            >>> FileType.get_tail_n_bytes(BytesIO(b'Hello World!'), 6)
             b'World!'
         """
         body.seek(-n, 2)
@@ -67,21 +68,24 @@ class FileType:
         body: BytesIO
     ) -> bool:
         """
-        Function to determine if the provided BytesIO object is of PARQUET type or not.
+        Function to determine if the provided **BytesIO** object is of **PARQUET** type or not.
 
         Args:
-            body (io.BytesIO): a BytesIO object containing the contents of the file to determine the type for.
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
 
         Returns:
-            bool: a boolean True if the file is of PARQUET type or False if not.
+            A boolean `True` if the file is of **PARQUET** type or `False` if not.
 
         Examples:
-            Basic usage::
+            Basic usage
+                ```python
                 >>> from io import BytesIO
                 >>> FileType.is_parquet(BytesIO(b'PAR1\x63\x68\x61\x7aPAR1'))
                 True
+                ```
 
-            Explicit example::
+            Explicit example
+                ```python
                 >>> from io import BytesIO
                 >>> import pandas as pd
                 >>>
@@ -91,9 +95,10 @@ class FileType:
                 >>>
                 >>> FileType.is_parquet(body)
                 True
+                ```
         """
         head4 = cls.get_head_n_bytes(body, 4)
         tail4 = cls.get_tail_n_bytes(body, 4)
-        logger.debug(f"HEAD(4): {head4}")
-        logger.debug(f"TAIL(4): {tail4}")
+        logger.debug(f"HEAD(4): {head4!r}")
+        logger.debug(f"TAIL(4): {tail4!r}")
         return all(i == b'PAR1' for i in [head4, tail4])
