@@ -2,7 +2,10 @@
 
 BASE_REF=$1  # {{ github.base_ref }}
 shift
-FILES_TO_CHECK="$@"
+FILES_TO_CHECK=$@
+
+echo "DEBUG: FILES_TO_CHECK below"
+echo $FILES_TO_CHECK
 
 FILES_NOT_CHANGED=()
 FILES_CHANGED=$(git diff --name-only origin/$BASE_REF...HEAD)
@@ -12,7 +15,10 @@ echo $FILES_CHANGED
 
 for file in $FILES_TO_CHECK; do
   IS_PRESENT=$(echo $FILES_CHANGED | grep "^$file$")  # either empty or the file
+  echo "FOR LOOP: $file"
+  echo "IS_PRESENT = $IS_PRESENT"
   if [[ -z $IS_PRESENT ]]; then  # if empty no match
+    echo "INNER IF CONDITION"
     FILES_NOT_CHANGED+=($file)
   fi
 done
