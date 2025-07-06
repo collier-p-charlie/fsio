@@ -12,6 +12,14 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [1.1.0] 
+[2025-07-06]()
+[Issue](https://github.com/collier-p-charlie/fsio/issues/13)
+
+### Added
+- Method `detect_file_type` to use current available methods to detect file type of a given **BytesIO** object.
+
+
 ## [1.0.0] 
 [2025-07-05]()
 
