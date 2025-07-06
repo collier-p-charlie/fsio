@@ -84,7 +84,7 @@ jobs:
           uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION
           
           echo "Installing test requirements"
-          uv pip compile pyproject.toml --extra test > test.requirements.txt
+          uv pip compile pyproject.toml --extra test --extras cli > test.requirements.txt
           uv pip install -r test.requirements.txt
 
       - name: Run PyTest
