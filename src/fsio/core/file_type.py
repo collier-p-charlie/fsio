@@ -1,18 +1,56 @@
 # -*- encode: utf-8 -*-
 
+import inspect
 import logging
 from io import BytesIO
+from types import MethodType
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class FileType:
+class FileType(object):
     """
     Class to determine the file type of an object in **BytesIO** form.
 
     This is based on the _file signatures_ / _magic numbers_ as defined [here](https://en.wikipedia.org/wiki/List_of_file_signatures).
     """
+
+    @classmethod
+    def supported_types(
+        cls
+    ) -> list[str]:
+        """
+        Function to return the current supported types for _file detection_.
+        This is determined from the current `@classmethod` objects of the form `is_<type>`.
+
+        Returns:
+            A **list** of **str** objects containing the supported types.
+
+        Examples:
+            >>> FileType.supported_types()
+            ['parquet']
+        """
+        return [
+            attr.lstrip('is_') for attr in dir(cls)
+            if isinstance(inspect.getattr_static(cls, attr), classmethod)
+               and attr.startswith('is_')
+        ]
+
+    @classmethod
+    def get_detection_methods(
+        cls
+    ) -> list[MethodType]:
+        """
+        Function to return the current supported _file detection_ methods.
+
+        Returns:
+            A **list** of `@classmethod` detection methods.
+
+        Examples:
+            >>> FileType.get_detection_methods()
+        """
+        return [getattr(cls, f'is_{s_type}') for s_type in cls.supported_types()]
 
     @classmethod
     def get_head_n_bytes(
@@ -102,3 +140,41 @@ class FileType:
         logger.debug(f"HEAD(4): {head4!r}")
         logger.debug(f"TAIL(4): {tail4!r}")
         return all(i == b'PAR1' for i in [head4, tail4])
+
+    @classmethod
+    def detect_file_type(
+        cls,
+        body: BytesIO
+    ) -> str | None:
+        """
+        Function to detect the _file type_ of the provided **BytesIO** object.
+
+        Args:
+            body: The **BytesIO** object to determine the _file type_ of.
+
+        Returns:
+            A **str** containing the name of the _file type_.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.detect_file_type(BytesIO(b'PAR1\x63\x68\x61\x7aPAR1'))
+                'parquet'
+                ```
+
+            Unsupported type usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.detect_file_type(BytesIO(b'\x63\x68\x61\x7a'))
+                None
+                ```
+        """
+        for method in cls.get_detection_methods():
+            logger.debug(f"Checking {method.__name__}(body)")
+            if method(body=body):
+                return method.__name__.lstrip('is_')
+
+        supported_types = cls.supported_types()
+        logger.info(f"Body is not of any of the supported types: {supported_types}")
+        return None
