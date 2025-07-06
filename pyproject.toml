@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fsio"
-version = "1.1.0"  # https://packaging.python.org/en/latest/discussions/versioning/
+version = "1.2.0"  # https://packaging.python.org/en/latest/discussions/versioning/
 dependencies = []
 requires-python = ">=3.11"
 authors = [
@@ -42,6 +42,9 @@ cli = [
     "typer"
 ]
 
+[project.scripts]
+fsio = "fsio.cli.program:app"
+
 [project.urls]
 Documentation = "https://collier-p-charlie.github.io/fsio"
 Repository = "https://github.com/collier-p-charlie/fsio"
@@ -69,3 +72,10 @@ addopts = [
   "-p", "no:warnings",
   "--cov"
 ]
+
+[tool.setuptools.package-data]
+"fsio" = ["py.typed"]
+
+[tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true

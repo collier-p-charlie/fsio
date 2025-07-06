@@ -1,5 +1,8 @@
 site_name: FSIO Documentation
+
 repo_url: https://github.com/collier-p-charlie/fsio
+repo_name: collier-p-charlie/fsio
+
 site_url: https://collier-p-charlie.github.io/fsio/
 
 theme:
@@ -21,3 +24,10 @@ markdown_extensions:
   - codehilite
   - toc:
       permalink: true
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - Core: code/core/api.md
+      - CLI: code/cli/api.md
+  - Back to Homepage: "https://collier-p-charlie.github.io/"
