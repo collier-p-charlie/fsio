@@ -14,6 +14,13 @@
 
 ---
 
+## Checklist
+
+- [ ] Do all the unit tests run locally (see [here](./workflows/run-tests.yaml)).
+- [ ] Have you ensured the correctness of the new _documentation_ using `mkdocs serve` locally.
+
+---
+
 ## Related Issues
 
 Closes #<issue_number>  
