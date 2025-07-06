@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv venv .venv && source .venv/bin/activate
-          uv pip install ".[test]"
+          uv pip install ".[test,cli]"
 
       - name: Run PyTest
         env:
@@ -84,7 +84,7 @@ jobs:
           uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION
           
           echo "Installing test requirements"
-          uv pip compile pyproject.toml --extra test > test.requirements.txt
+          uv pip compile pyproject.toml --extra test --extra cli > test.requirements.txt
           uv pip install -r test.requirements.txt
 
       - name: Run PyTest
