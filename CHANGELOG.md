@@ -17,7 +17,10 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 [Issue](https://github.com/collier-p-charlie/fsio/issues/13)
 
 ### Added
-- Method `detect_file_type` to use current available methods to detect file type of a given **BytesIO** object.
+- Method `detect_file_type` to use current available methods to detect file type of given **BytesIO** object.
+
+### Amended
+- Updated **PR** template.
 
 
 ## [1.0.0] 
