@@ -30,7 +30,7 @@ class FileType(object):
 
         Examples:
             >>> FileType.supported_types()
-            ['avro', 'bz2', 'gzip', 'orc', 'parquet', 'xlsx', 'zip']
+            ['avro', 'bz2', 'gz', 'orc', 'parquet', 'xlsx', 'zip']
         """
         return sorted(
             attr.lstrip('is_') for attr in dir(cls)
@@ -254,7 +254,7 @@ class FileType(object):
                 >>>
                 >>> body = BytesIO()
                 >>> with bz2.BZ2File(body, 'wb') as f:
-                >>>     f.write(b'contents')
+                >>>     f.write(b'\x63\x68\x61\x7a')
                 >>>
                 >>> body.seek(0)
                 >>> FileType.is_bz2(body)
@@ -264,6 +264,46 @@ class FileType(object):
         head3 = cls.get_head_n_bytes(body, 3)
         logger.debug(f"HEAD(3): {head3!r}")
         return all(i == b'BZh' for i in [head3])
+
+    @classmethod
+    def is_gz(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **GZIP** compression type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **GZIP** compression type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_gz(BytesIO(b'\x1f\x8b\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> import gzip
+                >>> from io import BytesIO
+                >>>
+                >>> body = BytesIO()
+                >>> with gzip.GzipFile(fileobj=body, mode="wb") as f:
+                >>>     f.write(b'\x63\x68\x61\x7a')
+                >>>
+                >>> body.seek(0)
+                >>> FileType.is_gz(body)
+                True
+                ```
+        """
+        head2 = cls.get_head_n_bytes(body, 2)
+        logger.debug(f"HEAD(2): {head2!r}")
+        return all(i == b'\x1f\x8b' for i in [head2])
 
     @classmethod
     def is_zip(
@@ -295,7 +335,7 @@ class FileType(object):
                 >>>
                 >>> body = BytesIO()
                 >>> with zipfile.ZipFile(body, 'w') as zip:
-                >>>     zip.writestr('file.ext', b'contents')
+                >>>     zip.writestr('file.ext', b'\x63\x68\x61\x7a')
                 >>>
                 >>> body.seek(0)
                 >>> FileType.is_zip(body)
