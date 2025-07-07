@@ -17,7 +17,7 @@ class TestCliProgram(TestCase):
     def test_supported_types(self) -> None:
         result = runner.invoke(app, ["supported-types"])
         self.assertEqual(result.exit_code, 0)
-        self.assertEqual(result.output, 'parquet\n')
+        self.assertTrue(result.output.startswith('avro\nbz2\ngz\norc\nparquet\nxlsx\nxml\nzip'))
 
     def test_detect_file_type_no_file_exists(self) -> None:
         file_path = 'fake/path'

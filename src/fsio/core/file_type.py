@@ -2,6 +2,7 @@
 
 import inspect
 import logging
+import zipfile
 from io import BytesIO
 from types import MethodType
 
@@ -29,13 +30,13 @@ class FileType(object):
 
         Examples:
             >>> FileType.supported_types()
-            ['parquet']
+            ['avro', 'bz2', 'gz', 'orc', 'parquet', 'xlsx', 'xml', 'zip']
         """
-        return [
+        return sorted(
             attr.lstrip('is_') for attr in dir(cls)
             if isinstance(inspect.getattr_static(cls, attr), classmethod)
                and attr.startswith('is_')
-        ]
+        )
 
     @classmethod
     def get_detection_methods(
@@ -101,6 +102,47 @@ class FileType(object):
         return body.read(n)
 
     @classmethod
+    def is_xml(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **XML** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **XML** type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_xml(BytesIO(b'<?xml\x20\x63\x68\x61\x7aPAR1'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> from io import BytesIO
+                >>> import xml.etree.ElementTree as ET
+                >>>
+                >>> body = BytesIO()
+                >>> root = ET.Element('data')
+                >>> tree = ET.ElementTree(root)
+                >>> tree.write(body, encoding='utf-8', xml_declaration=True)
+                >>> body.seek(0)
+                >>>
+                >>> FileType.is_xml(body)
+                True
+                ```
+        """
+        head6 = cls.get_head_n_bytes(body, 6)
+        logger.debug(f"HEAD(6): {head6!r}")
+        return head6 == b'<?xml\x20'
+
+    @classmethod
     def is_parquet(
         cls,
         body: BytesIO
@@ -130,6 +172,7 @@ class FileType(object):
                 >>> body = BytesIO()
                 >>> df = pd.DataFrame()
                 >>> df.to_parquet(body)
+                >>> body.seek(0)
                 >>>
                 >>> FileType.is_parquet(body)
                 True
@@ -140,6 +183,254 @@ class FileType(object):
         logger.debug(f"HEAD(4): {head4!r}")
         logger.debug(f"TAIL(4): {tail4!r}")
         return all(i == b'PAR1' for i in [head4, tail4])
+
+    @classmethod
+    def is_avro(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **AVRO** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **AVRO** type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_avro(BytesIO(b'Obj\x01\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> from io import BytesIO
+                >>> import pandas as pd
+                >>> from fastavro import writer
+                >>>
+                >>> body = BytesIO()
+                >>> df = pd.DataFrame(columns=["age"], data=[[18]])
+                >>> schema = {"type": "record", "name": "ages", "fields": [{"name": "age", "type": "int"}]}
+                >>> writer(body, schema, df.to_dict(orient="records"))
+                >>> body.seek(0)
+                >>>
+                >>> FileType.is_avro(body)
+                True
+                ```
+        """
+        head4 = cls.get_head_n_bytes(body, 4)
+        logger.debug(f"HEAD(4): {head4!r}")
+        return head4 == b'Obj\x01'
+
+    @classmethod
+    def is_orc(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **ORC** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **ORC** type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_orc(BytesIO(b'ORC\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> from io import BytesIO
+                >>> import pandas as pd
+                >>>
+                >>> body = BytesIO()
+                >>> df = pd.DataFrame()
+                >>> df.to_orc(body)
+                >>> body.seek(0)
+                >>>
+                >>> FileType.is_orc(body)
+                True
+                ```
+        """
+        head3 = cls.get_head_n_bytes(body, 3)
+        logger.debug(f"HEAD(3): {head3!r}")
+        return head3 == b'ORC'
+
+    @classmethod
+    def is_bz2(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **BZ2** compression type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **BZ2** compression type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_bz2(BytesIO(b'BZh\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> import bz2
+                >>> from io import BytesIO
+                >>>
+                >>> body = BytesIO()
+                >>> with bz2.BZ2File(body, 'wb') as f:
+                >>>     f.write(b'\x63\x68\x61\x7a')
+                >>>
+                >>> body.seek(0)
+                >>> FileType.is_bz2(body)
+                True
+                ```
+        """
+        head3 = cls.get_head_n_bytes(body, 3)
+        logger.debug(f"HEAD(3): {head3!r}")
+        return head3 == b'BZh'
+
+    @classmethod
+    def is_gz(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **GZIP** compression type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **GZIP** compression type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_gz(BytesIO(b'\x1f\x8b\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> import gzip
+                >>> from io import BytesIO
+                >>>
+                >>> body = BytesIO()
+                >>> with gzip.GzipFile(fileobj=body, mode="wb") as f:
+                >>>     f.write(b'\x63\x68\x61\x7a')
+                >>>
+                >>> body.seek(0)
+                >>> FileType.is_gz(body)
+                True
+                ```
+        """
+        head2 = cls.get_head_n_bytes(body, 2)
+        logger.debug(f"HEAD(2): {head2!r}")
+        return head2 == b'\x1f\x8b'
+
+    @classmethod
+    def is_zip(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **ZIP** compression type or not.
+        Note that this also includes types such as `.docx` and `.xlsx`.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **ZIP** compression type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_zip(BytesIO(b'PK\x03\x04\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> import zipfile
+                >>> from io import BytesIO
+                >>>
+                >>> body = BytesIO()
+                >>> with zipfile.ZipFile(body, 'w') as zip:
+                >>>     zip.writestr('file.ext', b'\x63\x68\x61\x7a')
+                >>>
+                >>> body.seek(0)
+                >>> FileType.is_zip(body)
+                True
+                ```
+        """
+        head4 = cls.get_head_n_bytes(body, 4)
+        logger.debug(f"HEAD(4): {head4!r}")
+        return any(head4 == i for i in [b'PK\x03\x04', b'PK\x05\x06', b'PK\x08\x08'])
+
+    @classmethod
+    def is_xlsx(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **XLSX** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **XLSX** type or `False` if not.
+
+        Examples:
+            >>> from pathlib import Path
+            >>> from io import BytesIO
+            >>>
+            >>> body = BytesIO()
+            >>> excel_path = Path('path/to/excel.xlsx')
+            >>> with excel_path.open('rb') as f:
+            >>>     body.write(f.read())
+            >>>
+            >>> body.seek(0)
+            >>> FileType.is_xlsx(body)
+            True
+        """
+        if cls.is_zip(body):
+            logger.info(f"Body is of ZIP type")
+            # https://en.wikipedia.org/wiki/Office_Open_XML#Standardization_process
+            required_files = {
+                '[Content_Types].xml',
+                '_rels/.rels',
+                'xl/workbook.xml',
+                'xl/_rels/workbook.xml.rels',
+                'xl/worksheets/sheet1.xml'
+            }
+            with zipfile.ZipFile(body, 'r') as zip:
+                file_contents = set(zip.namelist())
+                logger.debug(f"ZIP file contents: {file_contents}")
+                if required_files.issubset(file_contents):
+                    return True
+
+        return False
 
     @classmethod
     def detect_file_type(
