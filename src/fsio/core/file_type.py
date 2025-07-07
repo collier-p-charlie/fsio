@@ -265,6 +265,47 @@ class FileType(object):
         return all(i == b'BZh' for i in [head3])
 
     @classmethod
+    def is_zip(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **ZIP** compression type or not.
+        Note that this also includes types such as `.docx` and `.xlsx`.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **ZIP** compression type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_zip(BytesIO(b'PK\x03\x04\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> import zipfile
+                >>> from io import BytesIO
+                >>>
+                >>> body = BytesIO()
+                >>> with zipfile.ZipFile(body, 'w') as zip:
+                >>>     zip.writestr('file.ext', b'contents')
+                >>>
+                >>> body.seek(0)
+                >>> FileType.is_zip(body)
+                True
+                ```
+        """
+        head4 = cls.get_head_n_bytes(body, 4)
+        logger.debug(f"HEAD(4): {head4!r}")
+        return any(head4 == i for i in [b'PK\x03\x04', b'PK\x05\x06', b'PK\x08\x08'])
+
+    @classmethod
     def detect_file_type(
         cls,
         body: BytesIO
