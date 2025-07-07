@@ -29,13 +29,13 @@ class FileType(object):
 
         Examples:
             >>> FileType.supported_types()
-            ['parquet']
+            ['avro', 'bz2', 'gzip', 'orc', 'parquet', 'zip']
         """
-        return [
+        return sorted(
             attr.lstrip('is_') for attr in dir(cls)
             if isinstance(inspect.getattr_static(cls, attr), classmethod)
                and attr.startswith('is_')
-        ]
+        )
 
     @classmethod
     def get_detection_methods(
@@ -130,6 +130,7 @@ class FileType(object):
                 >>> body = BytesIO()
                 >>> df = pd.DataFrame()
                 >>> df.to_parquet(body)
+                >>> body.seek(0)
                 >>>
                 >>> FileType.is_parquet(body)
                 True
@@ -140,6 +141,88 @@ class FileType(object):
         logger.debug(f"HEAD(4): {head4!r}")
         logger.debug(f"TAIL(4): {tail4!r}")
         return all(i == b'PAR1' for i in [head4, tail4])
+
+    @classmethod
+    def is_avro(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **AVRO** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **AVRO** type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_avro(BytesIO(b'Obj\x01\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> from io import BytesIO
+                >>> import pandas as pd
+                >>> from fastavro import writer
+                >>>
+                >>> body = BytesIO()
+                >>> df = pd.DataFrame(columns=["age"], data=[[18]])
+                >>> schema = {"type": "record", "name": "ages", "fields": [{"name": "age", "type": "int"}]}
+                >>> writer(body, schema, df.to_dict(orient="records"))
+                >>> body.seek(0)
+                >>>
+                >>> FileType.is_avro(body)
+                True
+                ```
+        """
+        head4 = cls.get_head_n_bytes(body, 4)
+        logger.debug(f"HEAD(4): {head4!r}")
+        return all(i == b'Obj\x01' for i in [head4])
+
+    @classmethod
+    def is_bz2(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **BZ2** compression type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **BZ2** compression type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_bz2(BytesIO(b'BZh\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> import bz2
+                >>> from io import BytesIO
+                >>>
+                >>> body = BytesIO()
+                >>> with bz2.BZ2File(body, 'wb') as f:
+                >>>     f.write(b'contents')
+                >>>
+                >>> body.seek(0)
+                >>> FileType.is_bz2(body)
+                True
+                ```
+        """
+        head3 = cls.get_head_n_bytes(body, 3)
+        logger.debug(f"HEAD(3): {head3!r}")
+        return all(i == b'BZh' for i in [head3])
 
     @classmethod
     def detect_file_type(
