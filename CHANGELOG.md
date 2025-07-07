@@ -12,6 +12,18 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [1.3.0] 
+[2025-07-07]()
+[Issue](https://github.com/collier-p-charlie/fsio/issues/19)
+
+### Added
+- Method for detecting **avro**, **orc**, **xlsx**, **xml** files and **bz2**, **gz**, **zip** compressed files.
+
+### Amended
+- Moved the [.coveragerc]() settings to the [pyproject.toml](pyproject.toml).
+- Updated the [README](README.md) for explanations of usage and how to install, alongside _badges_.
+
+
 ## [1.2.0] 
 [2025-07-06]()
 [Issue](https://github.com/collier-p-charlie/fsio/issues/16)

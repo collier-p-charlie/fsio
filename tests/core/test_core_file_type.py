@@ -148,7 +148,7 @@ class TestCoreDetectType(TestCase):
 
     def test_detect_file_type_none(self) -> None:
         with self.assertLogs(LOGGER_NAME, level=logging.INFO) as logs:
-            response = FileType.detect_file_type(BytesIO(b'UNKNOWN'))
+            response = FileType.detect_file_type(body=self._get_file('ext'))
 
         self.assertIsNone(response)
 
