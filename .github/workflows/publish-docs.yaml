@@ -55,4 +55,5 @@ jobs:
       - name: Deploy Documentation
         run: |
           source .venv/bin/activate
+          cat README.md >> docs/index.md
           mkdocs gh-deploy --force
