@@ -138,7 +138,10 @@ class TestCoreDetectType(TestCase):
         }
         self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'PK\\x03\\x04'", logs.output)
         self.assertIn(f"INFO:{LOGGER_NAME}:Body is of ZIP type", logs.output)
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:ZIP file contents: {file_contents}", logs.output)
+
+        self.assertTrue(f"DEBUG:{LOGGER_NAME}:ZIP file contents" in logs.output[2])
+        for file_type in file_contents:
+            self.assertTrue(file_type in logs.output[2])
 
     def test_is_xlsx_false(self) -> None:
         with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
