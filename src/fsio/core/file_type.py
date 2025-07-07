@@ -30,7 +30,7 @@ class FileType(object):
 
         Examples:
             >>> FileType.supported_types()
-            ['avro', 'bz2', 'gz', 'orc', 'parquet', 'xlsx', 'zip']
+            ['avro', 'bz2', 'gz', 'orc', 'parquet', 'xlsx', 'xml', 'zip']
         """
         return sorted(
             attr.lstrip('is_') for attr in dir(cls)
@@ -100,6 +100,47 @@ class FileType(object):
         """
         body.seek(-n, 2)
         return body.read(n)
+
+    @classmethod
+    def is_xml(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **XML** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **XML** type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_xml(BytesIO(b'<?xml\x20\x63\x68\x61\x7aPAR1'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> from io import BytesIO
+                >>> import xml.etree.ElementTree as ET
+                >>>
+                >>> body = BytesIO()
+                >>> root = ET.Element('data')
+                >>> tree = ET.ElementTree(root)
+                >>> tree.write(body, encoding='utf-8', xml_declaration=True)
+                >>> body.seek(0)
+                >>>
+                >>> FileType.is_xml(body)
+                True
+                ```
+        """
+        head6 = cls.get_head_n_bytes(body, 6)
+        logger.debug(f"HEAD(6): {head6!r}")
+        return head6 == b'<?xml\x20'
 
     @classmethod
     def is_parquet(
@@ -183,7 +224,7 @@ class FileType(object):
         """
         head4 = cls.get_head_n_bytes(body, 4)
         logger.debug(f"HEAD(4): {head4!r}")
-        return all(i == b'Obj\x01' for i in [head4])
+        return head4 == b'Obj\x01'
 
     @classmethod
     def is_orc(
@@ -223,7 +264,7 @@ class FileType(object):
         """
         head3 = cls.get_head_n_bytes(body, 3)
         logger.debug(f"HEAD(3): {head3!r}")
-        return all(i == b'ORC' for i in [head3])
+        return head3 == b'ORC'
 
     @classmethod
     def is_bz2(
@@ -263,7 +304,7 @@ class FileType(object):
         """
         head3 = cls.get_head_n_bytes(body, 3)
         logger.debug(f"HEAD(3): {head3!r}")
-        return all(i == b'BZh' for i in [head3])
+        return head3 == b'BZh'
 
     @classmethod
     def is_gz(
@@ -303,7 +344,7 @@ class FileType(object):
         """
         head2 = cls.get_head_n_bytes(body, 2)
         logger.debug(f"HEAD(2): {head2!r}")
-        return all(i == b'\x1f\x8b' for i in [head2])
+        return head2 == b'\x1f\x8b'
 
     @classmethod
     def is_zip(

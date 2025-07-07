@@ -25,7 +25,7 @@ class TestCoreDetectType(TestCase):
             return BytesIO(f.read())
 
     def test_supported_types(self) -> None:
-        self.assertEqual(FileType.supported_types(), ['avro', 'bz2', 'gz', 'orc', 'parquet', 'xlsx', 'zip'])
+        self.assertEqual(FileType.supported_types(), ['avro', 'bz2', 'gz', 'orc', 'parquet', 'xlsx', 'xml', 'zip'])
 
     def test_get_head_n_bytes(self) -> None:
         body = BytesIO(b'ABCDE')
@@ -34,6 +34,18 @@ class TestCoreDetectType(TestCase):
     def test_get_tail_n_bytes(self) -> None:
         body = BytesIO(b'ABCDE')
         self.assertEqual(FileType.get_tail_n_bytes(body=body, n=2), b'DE')
+
+    def test_is_xml_true(self) -> None:
+        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
+            self.assertTrue(FileType.is_xml(body=self._get_file('xml')))
+
+        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(6): b'<?xml '", logs.output)
+
+    def test_is_xml_false(self) -> None:
+        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
+            self.assertFalse(FileType.is_xml(body=self._get_file('csv')))
+
+        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(6): b'col1,c'", logs.output)
 
     def test_is_parquet_true(self) -> None:
         with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
