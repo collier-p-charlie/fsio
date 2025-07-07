@@ -2,6 +2,7 @@
 
 import inspect
 import logging
+import zipfile
 from io import BytesIO
 from types import MethodType
 
@@ -29,7 +30,7 @@ class FileType(object):
 
         Examples:
             >>> FileType.supported_types()
-            ['avro', 'bz2', 'gzip', 'orc', 'parquet', 'zip']
+            ['avro', 'bz2', 'gzip', 'orc', 'parquet', 'xlsx', 'zip']
         """
         return sorted(
             attr.lstrip('is_') for attr in dir(cls)
@@ -304,6 +305,51 @@ class FileType(object):
         head4 = cls.get_head_n_bytes(body, 4)
         logger.debug(f"HEAD(4): {head4!r}")
         return any(head4 == i for i in [b'PK\x03\x04', b'PK\x05\x06', b'PK\x08\x08'])
+
+    @classmethod
+    def is_xlsx(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **XLSX** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **XLSX** type or `False` if not.
+
+        Examples:
+            >>> from pathlib import Path
+            >>> from io import BytesIO
+            >>>
+            >>> body = BytesIO()
+            >>> excel_path = Path('path/to/excel.xlsx')
+            >>> with excel_path.open('rb') as f:
+            >>>     body.write(f.read())
+            >>>
+            >>> body.seek(0)
+            >>> FileType.is_xlsx(body)
+            True
+        """
+        if cls.is_zip(body):
+            logger.info(f"Body is of ZIP type")
+            # https://en.wikipedia.org/wiki/Office_Open_XML#Standardization_process
+            required_files = {
+                '[Content_Types].xml',
+                '_rels/.rels',
+                'xl/workbook.xml',
+                'xl/_rels/workbook.xml.rels',
+                'xl/worksheets/sheet1.xml'
+            }
+            with zipfile.ZipFile(body, 'r') as zip:
+                file_contents = set(zip.namelist())
+                logger.debug(f"ZIP file contents: {file_contents}")
+                if required_files.issubset(file_contents):
+                    return True
+
+        return False
 
     @classmethod
     def detect_file_type(
