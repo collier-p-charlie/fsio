@@ -185,6 +185,46 @@ class FileType(object):
         return all(i == b'Obj\x01' for i in [head4])
 
     @classmethod
+    def is_orc(
+        cls,
+        body: BytesIO
+    ) -> bool:
+        """
+        Function to determine if the provided **BytesIO** object is of **ORC** type or not.
+
+        Args:
+            body: A **BytesIO** object containing the contents of the file to determine the type for.
+
+        Returns:
+            A boolean `True` if the file is of **ORC** type or `False` if not.
+
+        Examples:
+            Basic usage
+                ```python
+                >>> from io import BytesIO
+                >>> FileType.is_orc(BytesIO(b'ORC\x63\x68\x61\x7a'))
+                True
+                ```
+
+            Explicit example
+                ```python
+                >>> from io import BytesIO
+                >>> import pandas as pd
+                >>>
+                >>> body = BytesIO()
+                >>> df = pd.DataFrame()
+                >>> df.to_orc(body)
+                >>> body.seek(0)
+                >>>
+                >>> FileType.is_orc(body)
+                True
+                ```
+        """
+        head3 = cls.get_head_n_bytes(body, 3)
+        logger.debug(f"HEAD(3): {head3!r}")
+        return all(i == b'ORC' for i in [head3])
+
+    @classmethod
     def is_bz2(
         cls,
         body: BytesIO
