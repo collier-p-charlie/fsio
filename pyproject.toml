@@ -81,6 +81,7 @@ addopts = [
 
 [tool.mypy]
 mypy_path = "src"
+files = "src/"
 explicit_package_bases = true
 
 [tool.coverage.run]
@@ -110,6 +111,7 @@ fail_under = 90
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+src = ["src/"]
 
 [tool.ruff.lint]
 select = ["ALL"]  # See all rules here: https://docs.astral.sh/ruff/rules/
