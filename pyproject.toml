@@ -116,11 +116,9 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["ALL"]  # See all rules here: https://docs.astral.sh/ruff/rules/
 ignore = [
-    "COM812",  # Trailing commas
     "D100",
     "D104",
     "D205",
-    "D212",  # Ignore multi-line docstring having to start at first line
     "E501"  # Ignore line length errors
 ]
 

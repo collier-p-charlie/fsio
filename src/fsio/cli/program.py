@@ -15,8 +15,7 @@ app = typer.Typer()
     help="Command to return the current supported file types for detection.",  # CLI help
 )
 def supported_types() -> None:
-    """
-    Function to return all supported file types that can be detected.
+    """Function to return all supported file types that can be detected.
 
     Examples:
         ```shell
@@ -41,8 +40,7 @@ Path = Annotated[
 def detect_file_type(
     file: Path,
 ) -> None:
-    """
-    Function to detect the _file type_ of the provided file location.
+    """Function to detect the _file type_ of the provided file location.
 
     Args:
         file: The **Path** to the file we want to determine the _type_ for.

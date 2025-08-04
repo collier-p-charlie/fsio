@@ -11,8 +11,7 @@ logger.setLevel(logging.INFO)
 
 
 class FileType:
-    """
-    Class to determine the file type of an object in **BytesIO** form.
+    """Class to determine the file type of an object in **BytesIO** form.
 
     This is based on the _file signatures_ / _magic numbers_ as defined [here](https://en.wikipedia.org/wiki/List_of_file_signatures).
     """
@@ -21,8 +20,7 @@ class FileType:
     def supported_types(
         cls,
     ) -> list[str]:
-        """
-        Function to return the current supported types for _file detection_.
+        """Function to return the current supported types for _file detection_.
         This is determined from the current `@classmethod` objects of the form `is_<type>`.
 
         Returns:
@@ -42,8 +40,7 @@ class FileType:
     def get_detection_methods(
         cls,
     ) -> list[MethodType]:
-        """
-        Function to return the current supported _file detection_ methods.
+        """Function to return the current supported _file detection_ methods.
 
         Returns:
             A **list** of `@classmethod` detection methods.
@@ -59,8 +56,7 @@ class FileType:
         body: BytesIO,
         n: int,
     ) -> bytes:
-        """
-        Function to return the first `n` bytes from the **BytesIO** object.
+        """Function to return the first `n` bytes from the **BytesIO** object.
 
         Args:
             body: The **BytesIO** object to extract the bytes from.
@@ -83,8 +79,7 @@ class FileType:
         body: BytesIO,
         n: int,
     ) -> bytes:
-        """
-        Function to return the last `n` bytes from the **BytesIO** object.
+        """Function to return the last `n` bytes from the **BytesIO** object.
 
         Args:
             body: The **BytesIO** object to extract the bytes from.
@@ -106,8 +101,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        r"""
-        Function to determine if the provided **BytesIO** object is of **XML** type or not.
+        r"""Function to determine if the provided **BytesIO** object is of **XML** type or not.
 
         Args:
             body: A **BytesIO** object containing the contents of the file to determine the type for.
@@ -147,8 +141,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        r"""
-        Function to determine if the provided **BytesIO** object is of **PARQUET** type or not.
+        r"""Function to determine if the provided **BytesIO** object is of **PARQUET** type or not.
 
         Args:
             body: A **BytesIO** object containing the contents of the file to determine the type for.
@@ -189,8 +182,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        r"""
-        Function to determine if the provided **BytesIO** object is of **AVRO** type or not.
+        r"""Function to determine if the provided **BytesIO** object is of **AVRO** type or not.
 
         Args:
             body: A **BytesIO** object containing the contents of the file to determine the type for.
@@ -231,8 +223,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        r"""
-        Function to determine if the provided **BytesIO** object is of **ORC** type or not.
+        r"""Function to determine if the provided **BytesIO** object is of **ORC** type or not.
 
         Args:
             body: A **BytesIO** object containing the contents of the file to determine the type for.
@@ -271,8 +262,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        r"""
-        Function to determine if the provided **BytesIO** object is of **BZ2** compression type or not.
+        r"""Function to determine if the provided **BytesIO** object is of **BZ2** compression type or not.
 
         Args:
             body: A **BytesIO** object containing the contents of the file to determine the type for.
@@ -311,8 +301,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        r"""
-        Function to determine if the provided **BytesIO** object is of **GZIP** compression type or not.
+        r"""Function to determine if the provided **BytesIO** object is of **GZIP** compression type or not.
 
         Args:
             body: A **BytesIO** object containing the contents of the file to determine the type for.
@@ -351,8 +340,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        r"""
-        Function to determine if the provided **BytesIO** object is of **ZIP** compression type or not.
+        r"""Function to determine if the provided **BytesIO** object is of **ZIP** compression type or not.
         Note that this also includes types such as `.docx` and `.xlsx`.
 
         Args:
@@ -392,8 +380,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> bool:
-        """
-        Function to determine if the provided **BytesIO** object is of **XLSX** type or not.
+        """Function to determine if the provided **BytesIO** object is of **XLSX** type or not.
 
         Args:
             body: A **BytesIO** object containing the contents of the file to determine the type for.
@@ -437,8 +424,7 @@ class FileType:
         cls,
         body: BytesIO,
     ) -> str | None:
-        r"""
-        Function to detect the _file type_ of the provided **BytesIO** object.
+        r"""Function to detect the _file type_ of the provided **BytesIO** object.
 
         Args:
             body: The **BytesIO** object to determine the _file type_ of.
