@@ -38,8 +38,6 @@ jobs:
           uv pip install ".[test,cli]"
 
       - name: Run PyTest
-        env:
-          PYTHONPATH: src
         run: |
           source .venv/bin/activate
           pytest

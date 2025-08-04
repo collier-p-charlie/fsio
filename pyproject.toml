@@ -66,6 +66,7 @@ exclude = []
 
 [tool.pytest.ini_options]
 minversion = "6.0"
+pythonpath = "src"
 testpaths = [
     "tests"
 ]
@@ -125,3 +126,12 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "ANN001",  # missing type
+    "D101",  # missing docstring in test class
+    "D102",  # missing docstring in test method
+    "D103",  # missing docstring in test public function
+    "S101",  # using `assert` for test; recommended with PyTest
+]
