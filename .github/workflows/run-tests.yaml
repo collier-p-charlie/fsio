@@ -49,6 +49,11 @@ jobs:
           source .venv/bin/activate
           mypy src/ 
 
+      - name: Run Ruff  # Linting
+        run: |
+          source .venv/bin/activate
+          ruff check src/
+
   run-python-tests-from-test-pypi:
     runs-on: ubuntu-latest
     if: github.base_ref == 'main'

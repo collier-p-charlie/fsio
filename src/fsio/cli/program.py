@@ -12,9 +12,7 @@ app = typer.Typer()
 
 
 @app.command(
-    help=(
-        "Command to return the current supported file types for detection."
-    )  # CLI help
+    help="Command to return the current supported file types for detection.",  # CLI help
 )
 def supported_types() -> None:
     """
@@ -31,15 +29,17 @@ def supported_types() -> None:
         typer.secho(file_type)
 
 
-Path = Annotated[pathlib.Path, typer.Argument(default=..., help="Path to the file to detect the type of")]
+Path = Annotated[
+    pathlib.Path,
+    typer.Argument(default=..., help="Path to the file to detect the type of"),
+]
+
 
 @app.command(
-    help=(
-        "Command to determine the file type of the provided file."
-    )  # CLI help
+    help="Command to determine the file type of the provided file.",  # CLI help
 )
 def detect_file_type(
-    file: Path
+    file: Path,
 ) -> None:
     """
     Function to detect the _file type_ of the provided file location.
