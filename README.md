@@ -84,6 +84,6 @@ A list of the following **CLI** commands which are available are below.
 ## Development
 
 To contribute to this project, you can clone the repository and install the development dependencies.
-There is a [`pre-commit`]() hook which will run on each commit to ensure that the code is formatted correctly.
+There is a [`pre-commit`](https://pre-commit.com/) hook which will run on each commit to ensure that the code is formatted correctly.
 To install this, install the `.[test]` requirements of this project and then run `pre-commit install` in terminal.
 
