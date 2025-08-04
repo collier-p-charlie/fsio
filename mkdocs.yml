@@ -1,12 +1,31 @@
+# Site settings
 site_name: FSIO Documentation
-
-repo_url: https://github.com/collier-p-charlie/fsio
-repo_name: collier-p-charlie/fsio
-
 site_url: https://collier-p-charlie.github.io/fsio/
 
+# Repository settings
+repo_name: collier-p-charlie/fsio
+repo_url: https://github.com/collier-p-charlie/fsio
+
+
+# Theme settings
 theme:
   name: material
+  language: en
+  font:
+    text: montserrat
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - scheme: default
+      primary: teal
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
 
 plugins:
   - search

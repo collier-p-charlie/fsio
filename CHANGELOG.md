@@ -12,6 +12,15 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [1.3.1] 
+[2025-08-04]()
+[Issue](https://github.com/collier-p-charlie/fsio/issues/22)
+
+### Added
+- Adding `ruff` linting/formatting to **GitHub actions**.
+- Also added `pre-commit` for linting and `mypy` checks per commit locally.
+
+
 ## [1.3.0] 
 [2025-07-07]()
 [Issue](https://github.com/collier-p-charlie/fsio/issues/19)
