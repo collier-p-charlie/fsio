@@ -1,166 +1,193 @@
 # -*- encode: utf-8 -*-
 
 import logging
-import os
+import re
 from io import BytesIO
-from unittest import TestCase
+from pathlib import Path
+
+import pytest
 
 from fsio.core.file_type import FileType
 
-LOGGER_NAME = 'fsio.core.file_type'
+LOGGER_NAME = "fsio.core.file_type"
 
 
-class TestCoreDetectType(TestCase):
-    def setUp(self) -> None:
-        self.test_data_dir = os.path.join(os.path.dirname(__file__), 'data')
+@pytest.fixture(scope="module")
+def test_data_dir() -> Path:
+    """Test data directory for this test class."""
+    return Path(__file__).parent / "data"
 
-    def _get_file(
-        self,
-        extension: str
-    ) -> BytesIO:
-        """
-        Function to load the tests data file with the specified extension.
-        """
-        with open(os.path.join(self.test_data_dir, f'example.{extension}'), 'rb') as f:
-            return BytesIO(f.read())
 
+def get_file(extension: str, test_data_dir: Path) -> BytesIO:
+    """Function to load the tests data file with the specified extension."""
+    path = Path(test_data_dir, f"example.{extension}")
+    with path.open(mode="rb") as f:
+        return BytesIO(f.read())
+
+
+class TestCoreDetectType:
     def test_supported_types(self) -> None:
-        self.assertEqual(FileType.supported_types(), ['avro', 'bz2', 'gz', 'orc', 'parquet', 'xlsx', 'xml', 'zip'])
+        assert FileType.supported_types() == [
+            "avro",
+            "bz2",
+            "gz",
+            "orc",
+            "parquet",
+            "xlsx",
+            "xml",
+            "zip",
+        ]
 
     def test_get_head_n_bytes(self) -> None:
-        body = BytesIO(b'ABCDE')
-        self.assertEqual(FileType.get_head_n_bytes(body=body, n=3), b'ABC')
+        assert FileType.get_head_n_bytes(body=BytesIO(b"ABCDE"), n=3) == b"ABC"
 
     def test_get_tail_n_bytes(self) -> None:
-        body = BytesIO(b'ABCDE')
-        self.assertEqual(FileType.get_tail_n_bytes(body=body, n=2), b'DE')
+        assert FileType.get_tail_n_bytes(body=BytesIO(b"ABCDE"), n=2) == b"DE"
 
-    def test_is_xml_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_xml(body=self._get_file('xml')))
+    def test_is_xml_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_xml(body=get_file("xml", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(6): b'<?xml '", logs.output)
+        assert response
+        assert "HEAD(6): b'<?xml '" in caplog.text
 
-    def test_is_xml_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_xml(body=self._get_file('csv')))
+    def test_is_xml_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_xml(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(6): b'col1,c'", logs.output)
+        assert not response
+        assert "HEAD(6): b'col1,c'" in caplog.text
 
-    def test_is_parquet_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_parquet(body=self._get_file('parquet')))
+    def test_is_parquet_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_parquet(body=get_file("parquet", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'PAR1'", logs.output)
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:TAIL(4): b'PAR1'", logs.output)
+        assert response
+        assert "HEAD(4): b'PAR1'" in caplog.text
+        assert "TAIL(4): b'PAR1'" in caplog.text
 
-    def test_is_parquet_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_parquet(body=self._get_file('csv')))
+    def test_is_parquet_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_parquet(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'col1'", logs.output)
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:TAIL(4): b'\\n2,b'", logs.output)
+        assert not response
+        assert "HEAD(4): b'col1'" in caplog.text
+        assert "TAIL(4): b'\\n2,b'" in caplog.text
 
-    def test_is_avro_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_avro(body=self._get_file('avro')))
+    def test_is_avro_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_avro(body=get_file("avro", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'Obj\\x01'", logs.output)
+        assert response
+        assert "HEAD(4): b'Obj\\x01'" in caplog.text
 
-    def test_is_avro_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_avro(body=self._get_file('csv')))
+    def test_is_avro_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_avro(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'col1'", logs.output)
+        assert not response
+        assert "HEAD(4): b'col1'" in caplog.text
 
-    def test_is_orc_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_orc(body=self._get_file('orc')))
+    def test_is_orc_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_orc(body=get_file("orc", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(3): b'ORC'", logs.output)
+        assert response
+        assert "HEAD(3): b'ORC'" in caplog.text
 
-    def test_is_orc_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_orc(body=self._get_file('csv')))
+    def test_is_orc_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_orc(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(3): b'col'", logs.output)
+        assert not response
+        assert "HEAD(3): b'col'" in caplog.text
 
-    def test_is_bz2_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_bz2(body=self._get_file('ext.bz2')))
+    def test_is_bz2_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_bz2(body=get_file("ext.bz2", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(3): b'BZh'", logs.output)
+        assert response
+        assert "HEAD(3): b'BZh'" in caplog.text
 
-    def test_is_bz2_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_bz2(body=self._get_file('csv')))
+    def test_is_bz2_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_bz2(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(3): b'col'", logs.output)
+        assert not response
+        assert "HEAD(3): b'col'" in caplog.text
 
-    def test_is_gz_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_gz(body=self._get_file('ext.gz')))
+    def test_is_gz_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_gz(body=get_file("ext.gz", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(2): b'\\x1f\\x8b'", logs.output)
+        assert response
+        assert "HEAD(2): b'\\x1f\\x8b'" in caplog.text
 
-    def test_is_gz_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_gz(body=self._get_file('csv')))
+    def test_is_gz_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_gz(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(2): b'co'", logs.output)
+        assert not response
+        assert "HEAD(2): b'co'" in caplog.text
 
-    def test_is_zip_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_zip(body=self._get_file('zip')))
+    def test_is_zip_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_zip(body=get_file("zip", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'PK\\x03\\x04'", logs.output)
+        assert response
+        assert "HEAD(4): b'PK\\x03\\x04'" in caplog.text
 
-    def test_is_zip_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_zip(body=self._get_file('csv')))
+    def test_is_zip_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_zip(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'col1'", logs.output)
+        assert not response
+        assert "HEAD(4): b'col1'" in caplog.text
 
-    def test_is_xlsx_true(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertTrue(FileType.is_xlsx(body=self._get_file('xlsx')))
+    def test_is_xlsx_true(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_xlsx(body=get_file("xlsx", test_data_dir))
+
+        assert response
+        assert "HEAD(4): b'PK\\x03\\x04'" in caplog.text
+        assert re.search("INFO.*Body is of ZIP type", caplog.text)
+        assert "ZIP file contents" in caplog.text
 
         file_contents = {
-            'xl/theme/theme1.xml',
-            'docProps/app.xml',
-            '[Content_Types].xml',
-            'xl/worksheets/sheet1.xml',
-            'xl/_rels/workbook.xml.rels',
-            'xl/styles.xml',
-            'xl/workbook.xml',
-            'docProps/core.xml',
-            '_rels/.rels'
+            "xl/theme/theme1.xml",
+            "docProps/app.xml",
+            "[Content_Types].xml",
+            "xl/worksheets/sheet1.xml",
+            "xl/_rels/workbook.xml.rels",
+            "xl/styles.xml",
+            "xl/workbook.xml",
+            "docProps/core.xml",
+            "_rels/.rels",
         }
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'PK\\x03\\x04'", logs.output)
-        self.assertIn(f"INFO:{LOGGER_NAME}:Body is of ZIP type", logs.output)
 
-        self.assertTrue(f"DEBUG:{LOGGER_NAME}:ZIP file contents" in logs.output[2])
         for file_type in file_contents:
-            self.assertTrue(file_type in logs.output[2])
+            assert file_type in caplog.text
 
-    def test_is_xlsx_false(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            self.assertFalse(FileType.is_xlsx(body=self._get_file('csv')))
+    def test_is_xlsx_false(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.is_xlsx(body=get_file("csv", test_data_dir))
 
-        self.assertIn(f"DEBUG:{LOGGER_NAME}:HEAD(4): b'col1'", logs.output)
+        assert not response
+        assert "HEAD(4): b'col1'" in caplog.text
 
-    def test_detect_file_type_none(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.INFO) as logs:
-            response = FileType.detect_file_type(body=self._get_file('ext'))
+    def test_detect_file_type_none(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.detect_file_type(body=get_file("ext", test_data_dir))
 
-        self.assertIsNone(response)
+        assert response is None
+        assert (
+            f"Body is not of any of the supported types: {FileType.supported_types()}"
+            in caplog.text
+        )
 
-        supported_types = FileType.supported_types()
-        self.assertIn(f'INFO:{LOGGER_NAME}:Body is not of any of the supported types: {supported_types}', logs.output)
+    def test_detect_file_type_parquet(self, caplog, test_data_dir) -> None:
+        with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
+            response = FileType.detect_file_type(body=get_file("parquet", test_data_dir))
 
-    def test_detect_file_type_parquet(self) -> None:
-        with self.assertLogs(LOGGER_NAME, level=logging.DEBUG) as logs:
-            response = FileType.detect_file_type(self._get_file('parquet'))
-
-        self.assertEqual(response, 'parquet')
-        self.assertIn(f'DEBUG:{LOGGER_NAME}:Checking is_parquet(body)', logs.output)
+        assert response == "parquet"
+        assert "Checking is_parquet(body)" in caplog.text
