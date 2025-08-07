@@ -22,5 +22,4 @@ jobs:
 
       - name: Check branch name
         run: |
-          chmod +x .github/scripts/check-branch-name.sh
           .github/scripts/check-branch-name.sh "${{ github.head_ref }}"
