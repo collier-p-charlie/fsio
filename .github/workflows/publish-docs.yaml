@@ -37,7 +37,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --extra docs --system
+          uv sync --extra docs
 
       - name: Get cache ID
         run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV

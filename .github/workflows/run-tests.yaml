@@ -34,7 +34,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --extra test --extra cli --system
+          uv sync --extra test --extra cli
 
       - name: Run PyTest
         run: |
@@ -78,11 +78,13 @@ jobs:
         run: |
           VERSION=${{ steps.get-version.outputs.version }}
 
+          echo "Installing test requirements"
+          uv sync --extra test --extra cli
+
           echo "Installing Test PyPI fsio==$VERSION"
+          uv pip uninstall fsio -y --system
           uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION --system
 
-          echo "Installing test requirements"
-          uv sync --extra test --extra cli --system
 
       - name: Run PyTest
         run: |
