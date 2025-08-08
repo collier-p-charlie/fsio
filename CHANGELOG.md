@@ -12,6 +12,12 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [1.3.4](https://github.com/collier-p-charlie/fsio/compare/1.3.3...1.3.4) 2025-08-08
+
+### Amended
+- Ensure correct path on `uv publish` command.
+
+
 ## [1.3.3](https://github.com/collier-p-charlie/fsio/compare/1.3.2...1.3.3) 2025-08-08
 
 ### Amended
