@@ -4,8 +4,8 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 SOURCE_BRANCH=${1:-$CURRENT_BRANCH}
 TARGET_BRANCH=$2
 
-if [[ ! $SOURCE_BRANCH =~ ^(feature|bugfix|hotfix|release)/.+$ ]]; then
-  echo "Branch name $SOURCE_BRANCH must be of the form '^(feature|bugfix|hotfix|release)/*'"
+if [[ ! $SOURCE_BRANCH =~ ^(feature|bugfix|hotfix|release)/.+$ ]] && [[ ! $SOURCE_BRANCH == develop ]]; then
+  echo "Branch name $SOURCE_BRANCH must be of the form '^(feature|bugfix|hotfix|release)/*' or 'develop'"
   exit 1
 fi
 
