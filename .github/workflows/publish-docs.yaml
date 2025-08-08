@@ -37,7 +37,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --extra docs
+          uv sync --extra docs --no-install-project
 
       - name: Get cache ID
         run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
@@ -52,5 +52,6 @@ jobs:
 
       - name: Deploy Documentation
         run: |
+          source .venv/bin/activate
           cat README.md >> docs/index.md
           mkdocs gh-deploy --force

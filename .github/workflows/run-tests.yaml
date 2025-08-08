@@ -38,14 +38,17 @@ jobs:
 
       - name: Run PyTest
         run: |
+          source .venv/bin/activate
           pytest
 
       - name: Run MyPy  # Typing Checking
         run: |
+          source .venv/bin/activate
           mypy
 
       - name: Run Ruff  # Linting
         run: |
+          source .venv/bin/activate
           ruff check src/
 
   run-python-tests-from-test-pypi:
@@ -79,13 +82,12 @@ jobs:
           VERSION=${{ steps.get-version.outputs.version }}
 
           echo "Installing test requirements"
-          uv sync --extra test --extra cli
+          uv sync --extra test --extra cli --no-install-project
 
           echo "Installing Test PyPI fsio==$VERSION"
-          uv pip uninstall fsio -y --system
           uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION --system
-
 
       - name: Run PyTest
         run: |
+          source .venv/bin/activate
           pytest --no-cov  # override
