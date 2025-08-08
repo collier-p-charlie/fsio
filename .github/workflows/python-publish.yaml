@@ -61,6 +61,11 @@ jobs:
       name: testpypi
       url: https://test.pypi.org/p/fsio/${{ needs.release-build.outputs.version }}
     steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
         with:
@@ -85,6 +90,11 @@ jobs:
       name: pypi
       url: https://pypi.org/project/fsio/${{ needs.release-build.outputs.version }}
     steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
         with:
