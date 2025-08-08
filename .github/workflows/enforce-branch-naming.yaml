@@ -5,6 +5,7 @@ name: Enforce Branch Naming
 on:
   pull_request:
     branches:
+      - main
       - develop
     types:
       - opened
@@ -22,4 +23,6 @@ jobs:
 
       - name: Check branch name
         run: |
-          .github/scripts/check-branch-name.sh "${{ github.head_ref }}"
+          SRC_BRANCH="${{ github.head_ref }}"
+          TARGET_BRANCH="${{ github.base_ref }}"
+          .github/scripts/check-branch-name.sh SRC_BRANCH TARGET_BRANCH

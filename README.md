@@ -84,5 +84,27 @@ A list of the following **CLI** commands which are available are below.
 ## Development
 
 To contribute to this project, you can clone the repository and install the development dependencies.
+This can be done using `uv sync --all-extras` (which uses the [uv.lock](uv.lock) file for consistency).
 There is a [`pre-commit`](https://pre-commit.com/) hook which will run on each commit to ensure that the code is formatted correctly.
-To install this, install the `.[test]` requirements of this project and then run `pre-commit install` in terminal.
+To install this, we need to run
+
+```bash
+uv sync --extra test
+```
+
+to install `pre-commit` and then run `pre-commit install` in terminal.
+We can manually run the `pre-commit` hooks using the command
+
+```bash
+pre-commit run --all-files
+```
+
+### Branching
+
+When creating a new branch, please use one of the following:
+- `feature/*` for new features, branching off of `develop` branch (with **PR** to `develop` on completion);
+- `bugfix/*` for bug fixes (non-critical), branches off of `develop` branch (with **PR** to `develop` on completion);
+- `hotfix/*` for hotfixes, branching off of `main` branch (with **PR** to `main` on completion, then synced to `develop`); and
+- `release/*` for releases, branching off of `develop` branch (with **PR** to `main` on completion, then synced to `develop`).
+
+The `main` branch is the stable deployment, and `release` branches are used for preparing a new release.
