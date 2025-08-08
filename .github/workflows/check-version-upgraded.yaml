@@ -44,7 +44,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ">=3.11"
+          python-version: ">=3.12"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -53,12 +53,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv venv .venv && source .venv/bin/activate
-          uv pip install packaging
+          uv pip install packaging --system
 
       - name: Check version bump
         run: |
-          source .venv/bin/activate
           python3 branch/.github/scripts/check_version_bump.py \
           ${{ steps.current-version.outputs.CURRENT_VERSION }} \
           ${{ steps.develop-version.outputs.DEVELOP_VERSION }}
