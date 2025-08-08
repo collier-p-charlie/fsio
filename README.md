@@ -40,30 +40,30 @@ pip install 'fsio[cli]==$VERSION'
 
 This package was designed for simplifying some _file system operations_.
 Its original design was for detecting file types of a file, but it has been expanded beyond this.
-The main code lives within the [core](src/fsio/core) directory. Here, for example, you will see the 
+The main code lives within the [core](src/fsio/core) directory. Here, for example, you will see the
 [file_type](src/fsio/core/file_type.py) class which supports the `detect-file-type` commands within the **CLI**.
-Moreover, we can use this within **Python** code provided we have the object in **BytesIO** form. 
-For example, suppose we have a `.parquet` file without an extension and we want to establish its type, 
+Moreover, we can use this within **Python** code provided we have the object in **BytesIO** form.
+For example, suppose we have a `.parquet` file without an extension and we want to establish its type,
 and confirm that it really is of type _parquet_. To do this, we could do something as follows.
 
 ```python
 >>> from io import BytesIO
 >>> from pathlib import Path
->>> 
+>>>
 >>> from fsio.core import FileType
->>> 
+>>>
 >>> path_to_file = Path('path/to/suspected/parquet')
->>> 
+>>>
 >>> with path_to_file.open('rb') as f:
 >>>     body = BytesIO(f.read())
->>> 
+>>>
 >>> FileType.detect_file_type(body)
 'parquet'
 ```
 
 ## CLI
 
-If you optionally installed the `cli` subpackage, then you get extra functionality and are able to use most of the 
+If you optionally installed the `cli` subpackage, then you get extra functionality and are able to use most of the
 functionality from the `core` package. For example, you can _detect the file type_ of a given _file_ using the command
 
 ```shell
@@ -86,4 +86,3 @@ A list of the following **CLI** commands which are available are below.
 To contribute to this project, you can clone the repository and install the development dependencies.
 There is a [`pre-commit`](https://pre-commit.com/) hook which will run on each commit to ensure that the code is formatted correctly.
 To install this, install the `.[test]` requirements of this project and then run `pre-commit install` in terminal.
-

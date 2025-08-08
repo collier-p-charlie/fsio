@@ -23,7 +23,7 @@
 
 ## Related Issues
 
-Closes #<issue_number>  
+Closes #<issue_number>
 Related to #<issue_number>
 
 ---
