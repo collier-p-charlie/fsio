@@ -23,6 +23,6 @@ jobs:
 
       - name: Check branch name
         run: |
-          SRC_BRANCH="${{ github.head_ref }}"
-          TARGET_BRANCH="${{ github.base_ref }}"
-          .github/scripts/check-branch-name.sh SRC_BRANCH TARGET_BRANCH
+          SRC_BRANCH=${{ github.head_ref }}
+          TARGET_BRANCH=${{ github.base_ref }}
+          .github/scripts/check-branch-name.sh $SRC_BRANCH $TARGET_BRANCH
