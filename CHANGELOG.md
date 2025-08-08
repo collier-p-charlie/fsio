@@ -12,6 +12,13 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [1.3.7](https://github.com/collier-p-charlie/fsio/compare/1.3.6...1.3.7) 2025-08-08
+
+### Amended
+- Allow `main` to `develop` merges in branch name validation script.
+- Amending indention in [README.md](README.md).
+
+
 ## [1.3.6](https://github.com/collier-p-charlie/fsio/compare/1.3.5...1.3.6) 2025-08-08
 
 ### Amended

@@ -102,9 +102,10 @@ pre-commit run --all-files
 ### Branching
 
 When creating a new branch, please use one of the following:
-- `feature/*` for new features, branching off of `develop` branch (with **PR** to `develop` on completion);
-- `bugfix/*` for bug fixes (non-critical), branches off of `develop` branch (with **PR** to `develop` on completion);
-- `hotfix/*` for hotfixes, branching off of `main` branch (with **PR** to `main` on completion, then synced to `develop`); and
-- `release/*` for releases, branching off of `develop` branch (with **PR** to `main` on completion, then synced to `develop`).
+
+- `feature/*` for _new features_ (branch from and **PR** to `develop`);
+- `bugfix/*` for _bug fixes_ (non-critical) (branch from and **PR** to `develop`);
+- `hotfix/*` for _hotfixes_ (branch from and **PR** to `main`, syncing to `develop`); and
+- `release/*` for _releases_ (branch from `develop` with **PR** to `main`, syncing to `develop`).
 
 The `main` branch is the stable deployment, and `release` branches are used for preparing a new release.
