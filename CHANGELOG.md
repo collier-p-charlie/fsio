@@ -12,6 +12,12 @@ That is, given a version number `MAJOR.MINOR.PATCH`, increment the:
 - **PATCH** version when you make backwards compatible bug fixes
 
 
+## [1.3.6](https://github.com/collier-p-charlie/fsio/compare/1.3.5...1.3.6) 2025-08-08
+
+### Amended
+- Fixing error where `SOURCE_BRANCH` cannot be `develop` for `main` merge.
+
+
 ## [1.3.5](https://github.com/collier-p-charlie/fsio/compare/1.3.4...1.3.5) 2025-08-08
 
 ### Amended
