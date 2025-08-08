@@ -74,7 +74,7 @@ jobs:
 
       - name: Publish release distributions to Test PyPI
         run: |
-          uv publish dist/ --publish-url https://test.pypi.org/legacy/
+          uv publish --publish-url https://test.pypi.org/legacy/
 
   pypi-publish:
     runs-on: ubuntu-latest
@@ -103,4 +103,4 @@ jobs:
 
       - name: Publish release distributions to PyPI
         run: |
-          uv publish dist/
+          uv publish
