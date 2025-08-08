@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - develop
+      - main
     types:
       - opened
       - synchronize
@@ -22,12 +23,12 @@ jobs:
           fetch-depth: 1
           path: branch
 
-      - name: Checkout develop code  # Current development code
+      - name: Checkout target code  # Current development code
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: develop
-          path: develop
+          ref: ${{ github.base_ref }}
+          path: ${{ github.base_ref }}
 
       - name: Get current version
         id: current-version
@@ -35,11 +36,12 @@ jobs:
           CURRENT_VERSION=$(grep ^version branch/pyproject.toml | sed -r 's/^version = "(.*)"(.*)/\1/g')
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Get develop version
-        id: develop-version
+      - name: Get target version
+        id: target-version
         run: |
-          DEVELOP_VERSION=$(grep ^version develop/pyproject.toml | sed -r 's/^version = "(.*)"(.*)/\1/g')
-          echo "DEVELOP_VERSION=$DEVELOP_VERSION" >> $GITHUB_OUTPUT
+          TARGET_BRANCH=${{ github.base_ref }}
+          TARGET_VERSION=$(grep ^version $TARGET_BRANCH/pyproject.toml | sed -r 's/^version = "(.*)"(.*)/\1/g')
+          echo "TARGET_VERSION=$TARGET_VERSION" >> $GITHUB_OUTPUT
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -59,4 +61,4 @@ jobs:
         run: |
           python3 branch/.github/scripts/check_version_bump.py \
           ${{ steps.current-version.outputs.CURRENT_VERSION }} \
-          ${{ steps.develop-version.outputs.DEVELOP_VERSION }}
+          ${{ steps.target-version.outputs.TARGET_VERSION }}
