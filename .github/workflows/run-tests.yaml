@@ -34,8 +34,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv venv .venv && source .venv/bin/activate
-          uv pip install ".[test,cli]"
+          uv sync --extra test --extra cli
 
       - name: Run PyTest
         run: |
@@ -65,7 +64,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ">=3.11"
+          python-version: ">=3.12"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -80,15 +79,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv venv .venv && source .venv/bin/activate
           VERSION=${{ steps.get-version.outputs.version }}
-          
-          echo "Installing Test PyPI fsio==$VERSION"
-          uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION
-          
+
           echo "Installing test requirements"
-          uv pip compile pyproject.toml --extra test --extra cli > test.requirements.txt
-          uv pip install -r test.requirements.txt
+          uv sync --extra test --extra cli --no-install-project
+
+          echo "Installing Test PyPI fsio==$VERSION"
+          uv pip install --index-url https://test.pypi.org/simple/ fsio==$VERSION --system
 
       - name: Run PyTest
         run: |
