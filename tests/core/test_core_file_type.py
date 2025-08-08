@@ -72,7 +72,7 @@ class TestCoreDetectType:
 
         assert not response
         assert "HEAD(4): b'col1'" in caplog.text
-        assert "TAIL(4): b'\\n2,b'" in caplog.text
+        assert "TAIL(4): b'2,b\\n'" in caplog.text
 
     def test_is_avro_true(self, caplog, test_data_dir) -> None:
         with caplog.at_level(logging.DEBUG, logger=LOGGER_NAME):
